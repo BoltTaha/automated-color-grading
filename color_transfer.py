@@ -1,11 +1,10 @@
 """
-Luminafix Technical Test - Color Transfer Script
-=================================================
+Automated Color Grading - Color Transfer Script
+================================================
 Extracts tone/color characteristics from a reference image and applies them
 to target images using LAB color space statistical transfer with exposure normalization.
 
 Author: Muhammad Taha
-Date: Technical Test Submission
 """
 
 import numpy as np
@@ -180,7 +179,7 @@ def process_images(reference_path, target_paths, output_dir='output'):
     os.makedirs(output_dir, exist_ok=True)
     
     print("=" * 60)
-    print("Luminafix Color Transfer - Technical Test")
+    print("Automated Color Grading - Color Transfer")
     print("=" * 60)
     print(f"\nReference image: {Path(reference_path).name}")
     print(f"Target images: {len(target_paths)}")
