@@ -110,15 +110,8 @@ def normalize_exposure_luminance(img_lab, target_l_mean, target_l_std, adaptive=
 
 def apply_color_transfer(target_path, reference_chars, output_path):
     """
-    Apply color transfer from reference characteristics to target image.
-    Uses statistical color transfer in LAB color space (Reinhard method).
-    
-    Args:
-        target_path: Path to target image
-        reference_chars: Dictionary with reference image characteristics
-        output_path: Path to save processed image
+    Apply color transfer (Reinhard method) with Saturation Preservation.
     """
-    # Load target image
     target_img = cv2.imread(target_path)
     if target_img is None:
         raise ValueError(f"Could not load target image: {target_path}")
@@ -126,10 +119,10 @@ def apply_color_transfer(target_path, reference_chars, output_path):
     # Convert BGR to RGB
     target_rgb = cv2.cvtColor(target_img, cv2.COLOR_BGR2RGB)
     
-    # Convert RGB to LAB color space (OpenCV uses 0-255 range for 8-bit images)
+    # Convert RGB to LAB (OpenCV range 0-255)
     target_lab = cv2.cvtColor(target_rgb, cv2.COLOR_RGB2LAB).astype(np.float32)
     
-    # Step 1: Normalize exposure (luminance channel)
+    # Step 1: Normalize Exposure (L Channel)
     target_lab_normalized = normalize_exposure_luminance(
         target_lab,
         reference_chars['l_mean'],
@@ -137,44 +130,39 @@ def apply_color_transfer(target_path, reference_chars, output_path):
         adaptive=True
     )
     
-    # Step 2: Apply color transfer to A and B channels (chrominance)
-    # This transfers the color characteristics while preserving structure
+    # Step 2: Color Transfer (A & B Channels)
     current_a = target_lab_normalized[:, :, 1]
     current_b = target_lab_normalized[:, :, 2]
     
-    # Current chrominance statistics
-    current_a_mean = current_a.mean()
-    current_a_std = current_a.std()
-    current_b_mean = current_b.mean()
-    current_b_std = current_b.std()
+    current_a_mean, current_a_std = current_a.mean(), current_a.std()
+    current_b_mean, current_b_std = current_b.mean(), current_b.std()
     
-    # Transfer color statistics (Reinhard method)
-    # Match mean and standard deviation of A and B channels
+    # --- SATURATION PRESERVATION LOGIC ---
+    # Calculate strict Reinhard scaling
+    a_scale_strict = reference_chars['a_std'] / (current_a_std + 1e-5)
+    b_scale_strict = reference_chars['b_std'] / (current_b_std + 1e-5)
+    
+    # Blend with 1.0 to preserve original saturation (0.8 = 80% original saturation)
+    saturation_preservation = 0.8
+    a_scale = (a_scale_strict * (1.0 - saturation_preservation)) + (1.0 * saturation_preservation)
+    b_scale = (b_scale_strict * (1.0 - saturation_preservation)) + (1.0 * saturation_preservation)
+
+    # Apply Transfer
     if current_a_std > 0:
-        target_lab_normalized[:, :, 1] = (
-            (current_a - current_a_mean) * (reference_chars['a_std'] / current_a_std) + 
-            reference_chars['a_mean']
-        )
+        target_lab_normalized[:, :, 1] = (current_a - current_a_mean) * a_scale + reference_chars['a_mean']
     
     if current_b_std > 0:
-        target_lab_normalized[:, :, 2] = (
-            (current_b - current_b_mean) * (reference_chars['b_std'] / current_b_std) + 
-            reference_chars['b_mean']
-        )
+        target_lab_normalized[:, :, 2] = (current_b - current_b_mean) * b_scale + reference_chars['b_mean']
     
-    # --- CRITICAL FIX: OpenCV LAB uses 0-255 for A/B channels (128 = neutral grey) ---
-    # Clipping to -127/127 destroys warm colors. Must clip to 0-255.
+    # Clip to valid range (0-255)
     target_lab_normalized[:, :, 1] = np.clip(target_lab_normalized[:, :, 1], 0, 255)
     target_lab_normalized[:, :, 2] = np.clip(target_lab_normalized[:, :, 2], 0, 255)
     
-    # Convert back to RGB
+    # Convert back to RGB -> BGR
     target_lab_uint8 = target_lab_normalized.astype(np.uint8)
     result_rgb = cv2.cvtColor(target_lab_uint8, cv2.COLOR_LAB2RGB)
-    
-    # Convert RGB to BGR for saving with OpenCV
     result_bgr = cv2.cvtColor(result_rgb, cv2.COLOR_RGB2BGR)
     
-    # Save result
     cv2.imwrite(output_path, result_bgr)
     print(f"[OK] Processed: {Path(target_path).name} -> {Path(output_path).name}")
 
