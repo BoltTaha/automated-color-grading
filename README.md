@@ -4,6 +4,8 @@
 
 A Python-based Computer Vision tool that automates color grading by statistically transferring the aesthetic style of a reference image to a target image. It utilizes the LAB Color Space to separate luminance from chrominance, ensuring accurate exposure normalization while preserving the original content's structure.
 
+Steal the 'Golden Hour' look from any photo. 🌅 A Python tool that automatically clones color aesthetics using statistical analysis (No AI required).
+
 ## 📸 Results Showcase
 
 Here is a demo of the tool in action. The script extracts the 'Golden Hour' color palette from the reference (left) and statistically transfers it to a dull, overcast photo (center), creating a warm, sunlit result (right) automatically.

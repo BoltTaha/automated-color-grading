@@ -12,9 +12,6 @@ build/
 .venv
 venv/
 ENV/
-output/*.jpg
-output/*.png
-output/*.jpeg
 *.DS_Store
 .vscode/
 .idea/
