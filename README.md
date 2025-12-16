@@ -8,16 +8,16 @@ A Python-based Computer Vision tool that automates color grading by statisticall
 
 ## 📸 Results Showcase
 
-Here is a demo of the tool in action. The script extracts the 'Golden Hour' color palette from the reference (left) and statistically transfers it to a dull, overcast photo (center), creating a warm, sunlit result (right) automatically.
+Here is a demo of the tool in action. The script extracts the 'Golden Hour' color palette from the reference (left) and statistically transfers it to a cold, overcast city street (center), instantly creating a warm, cinematic sunset scene (right).
 
 ### Reference Image (Style Source)
 <img src="reference_sunset.jpg" alt="Reference Sunset Image" width="800"/>
 
 ### Before & After Comparison
 
-| Before | After |
-|--------|-------|
-| <img src="target_forest.jpg" alt="Original Target Image" width="400"/> | <img src="output/processed_target_forest.jpg" alt="Processed Image with Color Transfer" width="400"/> |
+| Before (Target) | After (Processed) |
+| :---: | :---: |
+| <img src="target_city.jpg" alt="Original Target - Cold City" width="400"/> | <img src="output/processed_target_city.jpg" alt="Processed Result - Warm Sunset" width="400"/> |
 
 **Original Target Image** → **Processed with Reference Style Applied**
 
