@@ -5,6 +5,7 @@ This script processes images using the color transfer algorithm.
 """
 
 from color_transfer import process_images
+from pathlib import Path
 
 # Reference and target images
 REFERENCE_IMAGE = 'reference_sunset.jpg'
@@ -29,7 +30,8 @@ if __name__ == '__main__':
         print("=" * 70)
         print(f"\nProcessed images saved in: {OUTPUT_DIR}/")
         print("\nFiles created:")
-        print("  - processed_target_forest.jpg")
+        for target in TARGET_IMAGES:
+            print(f"  - processed_{Path(target).stem}.jpg")
         print("\nReady!")
     except Exception as e:
         print(f"\n[ERROR] {e}")
