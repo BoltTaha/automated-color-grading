@@ -9,7 +9,7 @@ from color_transfer import process_images
 # Reference and target images
 REFERENCE_IMAGE = 'reference_sunset.jpg'
 TARGET_IMAGES = [
-    'target_forest.jpg'
+    'target_city.jpg'
 ]
 OUTPUT_DIR = 'output'
 
